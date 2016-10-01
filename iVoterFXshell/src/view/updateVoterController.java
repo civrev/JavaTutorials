@@ -1,3 +1,7 @@
+//    This is a JavaFX shell of an iVoter program I got from my professor.
+//    I have stripped it of all functionality and removed the combo box.
+//    https://github.com/abegaz <- The original author of this program
+
 package view;
 
 import java.sql.Connection;
@@ -68,7 +72,7 @@ public class updateVoterController {
 	void ClickGoButton(ActionEvent event) {
     	String vID = voteridTF.getText();
     	//debugging
-    	System.out.println("ClickGoButton vID = " + vID);
+    	System.out.println("ClickGoButton (updateVoterController) vID = " + vID);
     }
 
     @FXML
