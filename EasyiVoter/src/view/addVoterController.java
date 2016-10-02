@@ -105,9 +105,9 @@ public class addVoterController {
 		}
 
 		//I am putting together a String that is basically exactly how you would code it into SQL from XAMMP or MySQL
-		String megaquery = ("insert into voter (firstName, lastName, address, county, state, zipcode, phone)" +
+		String update = ("insert into voter (firstName, lastName, address, county, state, zipcode, phone)" +
 				" values(");
-		megaquery = megaquery+ "'" +
+		update = update+ "'" +
 				firstName+ "', '" +
 				lastName+ "', '" +
 				address+ "', '" +
@@ -116,11 +116,11 @@ public class addVoterController {
 				zipCode+ "', '" +
 				phoneNumber+ "')";
 		//debugging
-		System.out.println("MegaQuery = " + megaquery);
+		System.out.println("Update = " + update);
 		
 		// this will shove the string megaquery into the SQL database
 		// and execute it exactly as if it were in the console
-		RS = statement.executeUpdate(megaquery);
+		RS = statement.executeUpdate(update);
 		// statement.executeUpdate() will return a 1 if the DB actually adds 1 new voter
 		// and will return 0 if it doesn't. Probably also generating errors too.
 		if (RS == 1){
