@@ -140,7 +140,7 @@ public class displayVotersController {
         		lastName = (RS.getString("lastName"));
         		address = (RS.getString("address"));
         		zipCode = (Integer.toString(RS.getInt("zipcode")));
-        		county = RS.getString("state");
+        		county = RS.getString("county");
         		state = RS.getString("state");
         		phoneNumber = (Integer.toString(RS.getInt("phone")));
 
