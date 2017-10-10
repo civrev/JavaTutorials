@@ -1,4 +1,5 @@
 Files with associated difficulty 0-10
+All files have the title of the problem commented at the very top so you could look them up on https://open.kattis.com/
 
 - ACM.java: 1.4
 - Spanovac.java: 1.2
@@ -6,6 +7,3 @@ Files with associated difficulty 0-10
 - carrots.java: 1.2
 - speed.java: 1.3
 - tarifa.java: 1.3
-- 
-- 
-- 
