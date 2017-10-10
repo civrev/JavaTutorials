@@ -11,3 +11,5 @@ All files have the title of the problem commented at the very top so you could l
 - primeNumbers.java: 2.5
 - speed.java: 1.3
 - tarifa.java: 1.3
+
+Find me on Kattis https://open.kattis.com/users/christian5
