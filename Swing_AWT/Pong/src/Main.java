@@ -11,7 +11,7 @@ public class Main {
 		
 		
 		//just some setting up of the JFrame, really not important
-		frame.getContentPane().add(pongGame);    
+		frame.getContentPane().add(pongGame);   
 	    frame.pack();
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setLocationRelativeTo(null);

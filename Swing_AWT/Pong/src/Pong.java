@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.*;
 
@@ -17,6 +19,7 @@ public class Pong extends JPanel {
 	private Paddle p1; //both player 1 and 2 are very similar, so we will make them both 'Paddles'
 	private Paddle p2;
 	private Timer timer;
+	private JComponent keys;
 	
 	//this vvv is called a constructor. It is how you make a 'Pong' object
 	public Pong() { //pong doesn't have any settings you can choose,
@@ -44,10 +47,18 @@ public class Pong extends JPanel {
 		
 		add(playButton);
 		add(resetButton);
+		
+		keys = new JComponent(){};
+		
+		keys.addKeyListener(generateControls());
+		
+		add(keys);
+		
 		setPreferredSize(new Dimension(board_size,board_size));
 		setBackground(Color.black);
 	}
 	
+
 	public void paintComponent(Graphics page){
 		super.paintComponent(page);
 		
@@ -64,6 +75,7 @@ public class Pong extends JPanel {
 		page.setColor(p2.getPlayer_color());
 		page.fillPolygon(p2);
 		page.drawString(Integer.toString(p2_score), 3*(board_size/4), board_size/8);
+		
 		
 	}
 	
@@ -89,6 +101,7 @@ public class Pong extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timer.start();
+				keys.requestFocus();
 			}
 			
 		};
@@ -108,12 +121,58 @@ public class Pong extends JPanel {
 				p1_score = 0;
 				p2_score = 0;
 				repaint();
+				keys.requestFocus();
 			}
 			
 		};
 		
 		
 		return buttonListener;
+	}
+	
+	public KeyListener generateControls() {
+		KeyListener controls = new KeyListener() {
+			//key codes
+			//up arrow: 38
+			//down arrow: 40
+			//w: 87
+			//s: 83
+			
+
+			@Override
+			public void keyPressed(KeyEvent event) {
+				int keyCode = event.getKeyCode();
+				int increment = board_size/23;
+				switch(keyCode) {
+					case 87:
+						p1.setY(p1.getY() - increment);
+						break;
+					case 83:
+						p1.setY(p1.getY() + increment);
+						break;
+					case 38:
+						p2.setY(p2.getY() - increment);
+						break;
+					case 40:
+						p2.setY(p2.getY() + increment);
+						break;
+				}
+				repaint();
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent event) {
+				//you have to have this code, but don't worry about it not doing anything	
+			}
+
+			@Override
+			public void keyTyped(KeyEvent event) {
+				//you have to have this code, but don't worry about it not doing anything
+			}
+			
+		};
+		return controls;
 	}
 	
 	public void play() {
@@ -125,17 +184,80 @@ public class Pong extends JPanel {
 		
 		//such as what conditions qualify as scoring?
 		if(ball.x<=0) { //goes off screen left
-			p1_score+=1;
+			p2_score+=1;
 			ball.reset();
 		}else if(ball.x>=board_size) { //goes off screen right
-			p2_score+=1;
+			p1_score+=1;
 			ball.reset();
 		}
 		
+		//doing calculations that effect the ball hitting the paddle
+		collisions();
 		
 		repaint();
 		
 	}
+
+	private void collisions() {
+		
+		//doing calculations that effect the ball hitting the paddle and top/bottom bounds
+		int leftEdge = ball.x;
+		int nextLeft = ball.nextX();
+		int bSize = ball.getSize();
+		int rightEdge = ball.x + bSize;
+		int nextRight = nextLeft + bSize;
+		int top = ball.y;
+		int nextTop = ball.nextY();
+		int bottom = ball.y + bSize;
+		int nextBottom = nextTop + bSize;
+		int p2_edge = p2.getX()-p2.getWidth();
+		int direction = ball.getDirection();
+		
+		
+		//paddle collisions
+		
+		if(leftEdge >= p1.getX() && nextLeft < p1.getX()){ //potential collision based on x position
+			
+			if(top >= p1.getY() && bottom<= p1.getY()+p1.getLength()) { //confirm based on y position
+				ball.x = p1.getX(); //this stuff is graphics tweaking
+				repaint();
+				ball = p1.collision(ball); //this is what turns the ball the other direction
+			}
+			
+			
+		}else if(rightEdge <= p2_edge && nextRight > p2_edge){ //potential collision based on x position
+			
+			if(top >= p2.getY() && bottom<= p2.getY()+p2.getLength()) { //confirm based on y position
+				ball.x = p2.getX()-p2.getWidth()-bSize; //this stuff is graphics tweaking
+				repaint();
+				ball = p2.collision(ball); //this is what turns the ball the other direction
+			}
+			
+		}
+		
+		
+		//top and bottom of the screen collisions
+		
+		if(top >= 0 && nextTop <= 0) { //ball is about to go out of bounds at top of screen
+			if(direction%360>=270){
+				//in quadrant one
+				ball.setDirection(360-direction%360);
+			}else {
+				//in quadrant two
+				ball.setDirection(180-(direction%360 - 180));
+			}
+		}else if(bottom <= board_size && nextBottom >= board_size){ //ball is about to go out of bounds at bottom
+			if(direction%360 <=90) {
+				//in quadrant four
+				ball.setDirection(360-direction%360);
+			}else {
+				//in quadrant three
+				ball.setDirection(180+(180-direction%360));
+			}
+		}
+		
+	}
+	
 
 }
 

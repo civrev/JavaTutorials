@@ -10,17 +10,17 @@ public class Ball extends Point {
 	private int size;
 	private Color color;
 	
-	//		 90
+	//		 270
 	//		  ^
 	//		  |
 	//180 <------> 0
 	//		  |
 	//		  V
-	//		 270
+	//		 90
 
 	public Ball(int board_size, Color color) {
 		
-		this.speed = board_size/160;
+		this.speed = board_size/200;
 		this.size = board_size/60;
 		this.color = color;
 		
@@ -30,11 +30,7 @@ public class Ball extends Point {
 		setLocation(orig_x, orig_y);
 		
 		//randomly set which direction the ball goes
-		if(Math.random()>0.5){
-			direction=0; //go right
-		}else {
-			direction=180; //go left
-		}
+		direction = (int) (Math.random()*360.0);
 	}
 	
 	public void update(){
@@ -42,16 +38,20 @@ public class Ball extends Point {
 		y = (int) (y + Math.sin(Math.toRadians(direction))*speed);
 	}
 	
+	public int nextX(){
+		return (int) (x + Math.cos(Math.toRadians(direction))*speed);
+	}
+	
+	public int nextY(){
+		return (int) (y + Math.sin(Math.toRadians(direction))*speed);
+	}
+	
 	public void reset(){
 		//modify ball position using some math/physics
 		setLocation(orig_x, orig_y);
 		
 		//randomly set which direction the ball goes
-		if(Math.random()>0.5){
-			direction=0; //go right
-		}else {
-			direction=180; //go left
-		}
+		direction = (int) (Math.random()*360.0);
 		
 	}
 

@@ -31,6 +31,36 @@ public class Paddle extends Polygon {
 		this.addPoint(x-width, y+length);
 		this.addPoint(x-width, y);
 	}
+	
+	public Ball collision(Ball ball){
+		
+		int direction = ball.getDirection()%360;
+		
+		if(player==1) {
+			
+			if(direction <=180) {
+				//in quadrant three
+				ball.setDirection(90-(direction-90));
+			}else {
+				//in quadrant two
+				ball.setDirection(270+(270-direction));
+			}
+			
+			
+		}else { //must be player 2
+			
+			if(direction >=270) {
+				//in quadrant one
+				ball.setDirection(270-(direction-270));
+			}else {
+				//in quadrant four
+				ball.setDirection(90+(90-direction));
+			}
+			
+		}
+		
+		return ball;
+	}
 
 	public int getX() {
 		return x;
@@ -46,6 +76,7 @@ public class Paddle extends Polygon {
 
 	public void setY(int y) {
 		this.y = y;
+		this.ypoints = new int[]{y,y+length, y+length, y}; //using setY() will now move the paddle
 	}
 
 	public int getLength() {
