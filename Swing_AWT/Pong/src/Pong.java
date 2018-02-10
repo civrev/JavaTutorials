@@ -7,15 +7,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
 public class Pong extends JPanel {
 	
+	private final int BALLS = 6;
+	
 	private int p1_score;
 	private int p2_score;
 	private int board_size;
-	private Ball ball;
+	private ArrayList<Ball> ballList = new ArrayList<Ball>();
 	private Paddle p1; //both player 1 and 2 are very similar, so we will make them both 'Paddles'
 	private Paddle p2;
 	private Timer timer;
@@ -28,7 +31,11 @@ public class Pong extends JPanel {
 		p1_score = 0; //like the score starts at 0 for both players
 		p2_score = 0;
 		board_size = 800;
-		ball = new Ball(board_size, Color.white); //start in middle of board
+		//ball = new Ball(board_size, Color.white); //start in middle of board
+		
+		for(int i = 0; i<BALLS; i++) {
+			ballList.add(new Ball(board_size, Color.white));
+		}
 		
 		p1 = new Paddle(1, board_size, Color.red);
 		p2 = new Paddle(2, board_size, Color.blue);
@@ -74,8 +81,10 @@ public class Pong extends JPanel {
 	public void paintComponent(Graphics page){
 		super.paintComponent(page);
 		
-		page.setColor(ball.getColor()); //any changes to the 'page' will now be in this color
-		page.fillOval(ball.x, ball.y, ball.getSize(), ball.getSize()); //'fillOval' is going to make a ball
+		for(Ball ball:ballList) {
+			page.setColor(ball.getColor()); //any changes to the 'page' will now be in this color
+			page.fillOval(ball.x, ball.y, ball.getSize(), ball.getSize()); //'fillOval' is going to make a ball
+		}
 		
 		Font font = new Font("Score", Font.PLAIN, board_size/20);
 		page.setFont(font);
@@ -144,7 +153,9 @@ public class Pong extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timer.stop();
-				ball.reset();
+				for(Ball ball: ballList) {
+					ball.reset();
+				}
 				p1_score = 0;
 				p2_score = 0;
 				repaint();
@@ -204,28 +215,43 @@ public class Pong extends JPanel {
 	
 	public void play() {
 		
+		Ball p1_closestBall = null;
+		Ball p2_closestBall = null;
+		double[] distances = {board_size*2,board_size*2}; //distance of closest ball to player {p1,p2}
+		
 		//the ball has to move
-		ball.update();
-		
-		//now do everything related to the ball moving
-		
-		//such as what conditions qualify as scoring?
-		if(ball.x<=0) { //goes off screen left
-			p2_score+=1;
-			ball.reset();
-		}else if(ball.x>=board_size) { //goes off screen right
-			p1_score+=1;
-			ball.reset();
+		for(Ball ball: ballList) {
+			ball.update();
+			
+			//now do everything related to the ball moving
+			
+			//such as what conditions qualify as scoring?
+			if(ball.x<=0) { //goes off screen left
+				p2_score+=1;
+				ball.reset();
+			}else if(ball.x>=board_size) { //goes off screen right
+				p1_score+=1;
+				ball.reset();
+			}
+			
+			//doing calculations that effect the ball hitting the paddle
+			double[] temp = collisions(ball);
+			if(temp[0]<distances[0]) {
+				distances[0] = temp[0];
+				p1_closestBall = ball;
+			}
+			if(temp[1]<distances[1]) {
+				distances[1] = temp[1];
+				p2_closestBall = ball;
+			}
 		}
-		
-		//doing calculations that effect the ball hitting the paddle
-		collisions();
-		
+		p1.computerMove(p1_closestBall);
+		p2.computerMove(p2_closestBall);
 		repaint();
 		
 	}
 
-	private void collisions() {
+	private double[] collisions(Ball ball) {
 		
 		//doing calculations that effect the ball hitting the paddle and top/bottom bounds
 		int leftEdge = ball.x;
@@ -239,43 +265,6 @@ public class Pong extends JPanel {
 		int nextBottom = nextTop + bSize;
 		int p2_edge = p2.getX()-p2.getWidth();
 		int direction = ball.getDirection();
-		int randomNum = (int) (Math.random()*100);
-		int increment = board_size/140;
-		
-		
-		
-		//computer can play the game too
-		if(p1.isComputer()) {
-			if(50+p1.getDifficulty()*5>=randomNum) {
-				if(bottom > p1.getY()+p1.getLength()/2) { //move up towards ball
-					p1.setY(p1.getY() + increment);
-				}else {
-					p1.setY(p1.getY() - increment);
-				}
-			}else { //if fail random number check, do the opposite of intended move
-				if(bottom > p1.getY()+p1.getLength()/2) {
-					p1.setY(p1.getY() - increment);
-				}else {
-					p1.setY(p1.getY() + increment);
-				}
-			}
-		}
-		
-		if(p2.isComputer()) {
-			if(50+p2.getDifficulty()*5>=randomNum) {
-				if(bottom > p2.getY()+p2.getLength()/2) {
-					p2.setY(p2.getY() + increment);
-				}else {
-					p2.setY(p2.getY() - increment);
-				}
-			}else {
-				if(bottom > p2.getY()+p2.getLength()/2) {
-					p2.setY(p2.getY() - increment);
-				}else {
-					p2.setY(p2.getY() + increment);
-				}
-			}
-		}
 		
 		
 		//paddle collisions
@@ -319,6 +308,21 @@ public class Pong extends JPanel {
 				ball.setDirection(180+(180-direction%360));
 			}
 		}
+		
+		//distance formula sqrt( (x1-x2)^2 + (y1-y2)^2 )
+		int y1 = bottom;
+		int y2 = p1.getY()+p1.getLength()/2;
+		int x1 = leftEdge;
+		int x2 = p1.getX();
+		
+		double d1 = Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
+		
+		y2 = p2.getY()+p2.getLength()/2;
+		x2 = p2.getX();
+		
+		double d2 = Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
+		
+		return new double[] {d1,d2};
 		
 	}
 	

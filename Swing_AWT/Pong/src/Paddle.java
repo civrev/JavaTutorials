@@ -8,6 +8,7 @@ public class Paddle extends Polygon {
 	private int length;
 	private int width;
 	private int player; //1 is left side, 2 is right side
+	private int board_size;
 	private Color player_color;
 	private boolean isComputer;
 	private int difficulty;
@@ -17,6 +18,7 @@ public class Paddle extends Polygon {
 		this.player = player;
 		this.player_color = color;
 		this.isComputer = false;
+		this.board_size = board_size;
 		
 		if(player==1) {
 			x = board_size/16;
@@ -63,6 +65,30 @@ public class Paddle extends Polygon {
 		}
 		
 		return ball;
+	}
+	
+public void computerMove(Ball ball) {
+		
+		int bottom = ball.y + ball.getSize();
+		int randomNum = (int) (Math.random()*100);
+		int increment = board_size/60;
+		
+		//computer can play the game too
+		if(isComputer) {
+			if(50+difficulty*5>=randomNum) {
+				if(bottom > y+length/2) { //move up towards ball
+					setY(y + increment);
+				}else { // move down towards ball
+					setY(y - increment);
+				}
+			}else { //if fail random number check, do the opposite of intended move
+				if(bottom > y+length/2) { //move up towards ball
+					setY(y - increment);
+				}else {
+					setY(y + increment);
+				}
+			}
+		}
 	}
 
 	public int getX() {

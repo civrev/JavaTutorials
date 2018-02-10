@@ -7,7 +7,7 @@ public class Main {
 		JFrame frame=new JFrame("Pong");
 		
 		//create your 'Pong' object
-		Pong pongGame = new Pong(5, 10);
+		Pong pongGame = new Pong(10, 10);
 		
 		
 		//just some setting up of the JFrame, really not important

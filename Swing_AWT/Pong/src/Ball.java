@@ -3,6 +3,8 @@ import java.awt.Point;
 
 public class Ball extends Point {
 	
+	//this class is going to hold everything there is related to a ball on the screen
+	
 	private int speed; //how fast does this ball move?
 	private int direction; //where is it moving to? In degrees
 	private int orig_x;
@@ -20,7 +22,7 @@ public class Ball extends Point {
 
 	public Ball(int board_size, Color color) {
 		
-		this.speed = board_size/120;
+		this.speed = board_size/250;
 		this.size = board_size/60;
 		this.color = color;
 		
@@ -34,6 +36,9 @@ public class Ball extends Point {
 	}
 	
 	public void update(){
+		if(direction%180 >= 0 && direction%180 <= 5) {
+			direction = 10;
+		}
 		x = (int) (x + Math.cos(Math.toRadians(direction))*speed);
 		y = (int) (y + Math.sin(Math.toRadians(direction))*speed);
 	}
