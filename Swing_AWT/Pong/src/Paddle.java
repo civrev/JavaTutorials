@@ -9,11 +9,14 @@ public class Paddle extends Polygon {
 	private int width;
 	private int player; //1 is left side, 2 is right side
 	private Color player_color;
+	private boolean isComputer;
+	private int difficulty;
 
 	public Paddle(int player, int board_size, Color color) {
 		
 		this.player = player;
 		this.player_color = color;
+		this.isComputer = false;
 		
 		if(player==1) {
 			x = board_size/16;
@@ -110,5 +113,22 @@ public class Paddle extends Polygon {
 	public void setPlayer_color(Color player_color) {
 		this.player_color = player_color;
 	}
+
+	public boolean isComputer() {
+		return isComputer;
+	}
+
+	public void setComputer(boolean isComputer) {
+		this.isComputer = isComputer;
+	}
+
+	public int getDifficulty() {
+		return difficulty;
+	}
+
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
+	}
+	
 
 }

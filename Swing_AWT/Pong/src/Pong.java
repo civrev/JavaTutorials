@@ -29,9 +29,9 @@ public class Pong extends JPanel {
 		p2_score = 0;
 		board_size = 800;
 		ball = new Ball(board_size, Color.white); //start in middle of board
-		p1 = new Paddle(1, board_size, Color.red); //specify which paddle belongs to who, in this case player '1'
-		p2 = new Paddle(2, board_size, Color.blue); //here player '2'
 		
+		p1 = new Paddle(1, board_size, Color.red);
+		p2 = new Paddle(2, board_size, Color.blue);
 		
 		//this is a 'Timer' object.
 		//it take in 2 arguments, first how often you want it to do something
@@ -58,6 +58,18 @@ public class Pong extends JPanel {
 		setBackground(Color.black);
 	}
 	
+	public Pong(int p2_difficulty) {
+		this();
+		p2.setComputer(true);
+		p2.setDifficulty(p2_difficulty);
+	}
+	
+	public Pong(int p1_difficulty, int p2_difficulty) {
+		this(p2_difficulty);
+		p1.setComputer(true);
+		p1.setDifficulty(p1_difficulty);
+	}
+	
 
 	public void paintComponent(Graphics page){
 		super.paintComponent(page);
@@ -67,6 +79,21 @@ public class Pong extends JPanel {
 		
 		Font font = new Font("Score", Font.PLAIN, board_size/20);
 		page.setFont(font);
+		
+		
+		//win at 10 points
+		if(p1_score==10) {
+			timer.stop();
+			page.setColor(p1.getPlayer_color());
+			page.setFont(new Font("Score", Font.PLAIN, board_size/8));
+			page.drawString("Player 1 won!", board_size/10, board_size/2);
+			
+		}else if(p2_score==10) {
+			timer.stop();
+			page.setColor(p2.getPlayer_color());
+			page.setFont(new Font("Score", Font.PLAIN, board_size/8));
+			page.drawString("Player 2 won!", board_size/10, board_size/2);
+		}
 		
 		page.setColor(p1.getPlayer_color());
 		page.fillPolygon(p1);
@@ -212,6 +239,43 @@ public class Pong extends JPanel {
 		int nextBottom = nextTop + bSize;
 		int p2_edge = p2.getX()-p2.getWidth();
 		int direction = ball.getDirection();
+		int randomNum = (int) (Math.random()*100);
+		int increment = board_size/140;
+		
+		
+		
+		//computer can play the game too
+		if(p1.isComputer()) {
+			if(50+p1.getDifficulty()*5>=randomNum) {
+				if(bottom > p1.getY()+p1.getLength()/2) { //move up towards ball
+					p1.setY(p1.getY() + increment);
+				}else {
+					p1.setY(p1.getY() - increment);
+				}
+			}else { //if fail random number check, do the opposite of intended move
+				if(bottom > p1.getY()+p1.getLength()/2) {
+					p1.setY(p1.getY() - increment);
+				}else {
+					p1.setY(p1.getY() + increment);
+				}
+			}
+		}
+		
+		if(p2.isComputer()) {
+			if(50+p2.getDifficulty()*5>=randomNum) {
+				if(bottom > p2.getY()+p2.getLength()/2) {
+					p2.setY(p2.getY() + increment);
+				}else {
+					p2.setY(p2.getY() - increment);
+				}
+			}else {
+				if(bottom > p2.getY()+p2.getLength()/2) {
+					p2.setY(p2.getY() - increment);
+				}else {
+					p2.setY(p2.getY() + increment);
+				}
+			}
+		}
 		
 		
 		//paddle collisions

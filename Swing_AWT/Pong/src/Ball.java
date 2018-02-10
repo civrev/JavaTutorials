@@ -20,7 +20,7 @@ public class Ball extends Point {
 
 	public Ball(int board_size, Color color) {
 		
-		this.speed = board_size/200;
+		this.speed = board_size/120;
 		this.size = board_size/60;
 		this.color = color;
 		
